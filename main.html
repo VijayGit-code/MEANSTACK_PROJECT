@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Indian Language Translator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    :root {
+      /* --gradient-bg: linear-gradient(135deg, #0f2027 0%, #203a43 50%,#2c5364 100%); */
+      --gradient-bg: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      /* --gradient-bg: linear-gradient(135deg,  #dbe6e4 0%, #a9c9a4 100%); */
+      --card-glass: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.25);
+      --input-bg: rgba(255, 255, 255, 0.3);
+      --btn-gradient: linear-gradient(to right, #667eea, #764ba2);
+      --btn-hover: linear-gradient(to right, #5a67d8, #6b46c1);
+      --font-color: #fff;
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gradient-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      color: var(--font-color);
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      text-shadow: 1px 1px 5px var(--shadow-color);
+    }
+
+    .translator-container {
+      background: var(--card-glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px var(--shadow-color);
+      padding: 2rem;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    textarea, select {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--input-bg);
+      color: #000000;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      resize: none;
+      outline: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    textarea::placeholder {
+      color: #f1f1f1;
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg fill='%23ffffff' viewBox='0 0 20 20'%3e%3cpath d='M7 7l3-3 3 3M7 13l3 3 3-3'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.2em;
+      cursor: pointer;
+    }
+
+    button {
+      display: inline-block;
+      width: 100%;
+      background: var(--btn-gradient);
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--btn-hover);
+      transform: scale(1.02);
+    }
+
+    button:active {
+      transform: scale(1);
+    }
+
+    .language-info {
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 1rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 2rem;
+      }
+
+      .translator-container {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>🌐 Indian Language Translator</h2>
+
+  <div class="translator-container">
+    <textarea id="inputText" rows="4" placeholder="Enter text in any language..."></textarea>
+
+    <label for="targetLang">Translate to:</label>
+    <select id="targetLang">
+      <option value="hi">Hindi</option>
+      <option value="te">Telugu</option>
+      <option value="ta">Tamil</option>
+      <option value="kn">Kannada</option>
+      <option value="ml">Malayalam</option>
+      <option value="gu">Gujarati</option>
+      <option value="bn">Bengali</option>
+      <option value="mr">Marathi</option>
+      <option value="pa">Punjabi</option>
+      <option value="ur">Urdu</option>
+      <option value="or">Odia (Oriya)</option>
+      <option value="as">Assamese</option>
+      <option value="sa">Sanskrit</option>
+      <option value="sd">Sindhi</option>
+      <option value="kok">Konkani</option>
+      <option value="mai">Maithili</option>
+      <option value="doi">Dogri</option>
+      <option value="ks">Kashmiri</option>
+      <option value="mni">Manipuri (Meitei)</option>
+      <option value="brx">Bodo</option>
+      <option value="sat">Santhali</option>
+    </select>
+
+    <button onclick="translateText()">Translate</button>
+
+    <textarea id="outputText" rows="4" placeholder="Translation will appear here..." readonly></textarea>
+
+    <button onclick="speakText()">🔊 Speak Translation</button>
+  </div>
+
+  <script>
+    async function translateText() {
+      const input = document.getElementById("inputText").value;
+      const targetLang = document.getElementById("targetLang").value;
+
+      if (!input.trim()) {
+        alert("Please enter text to translate.");
+        return;
+      }
+
+      const button = document.querySelector('button');
+      button.disabled = true;
+      button.innerText = 'Translating...';
+
+      try {
+        const response = await fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(input)}&langpair=en|${targetLang}`
+        );
+        const data = await response.json();
+        document.getElementById("outputText").value = data.responseData.translatedText;
+      } catch (error) {
+        console.error("Translation error:", error);
+        alert("Something went wrong while translating.");
+      } finally {
+        button.disabled = false;
+        button.innerText = 'Translate';
+      }
+    }
+
+    function speakText() {
+      const text = document.getElementById("outputText").value;
+      if (!text.trim()) {
+        alert("Please translate something first.");
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const lang = document.getElementById("targetLang").value;
+      utterance.lang = langMap[lang] || 'en-IN';
+      speechSynthesis.speak(utterance);
+    }
+
+    const langMap = {
+      hi: 'hi-IN',
+      te: 'te-IN',
+      ta: 'ta-IN',
+      kn: 'kn-IN',
+      ml: 'ml-IN',
+      gu: 'gu-IN',
+      bn: 'bn-IN',
+      mr: 'mr-IN',
+      pa: 'pa-IN',
+      ur: 'ur-IN',
+      or: 'or-IN',
+      sa: 'sa-IN',
+      kok: 'kok-IN',
+      mai: 'mai-IN',
+      ks: 'ks-IN',
+      as: 'as-IN',
+      doi: 'doi-IN',
+      sd: 'sd-IN',
+      brx: 'brx-IN',
+      mni: 'mni-IN',
+      sat: 'sat-IN'
+    };
+  </script>
+</body>
+</html>
